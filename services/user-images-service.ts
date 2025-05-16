@@ -1,55 +1,69 @@
-import axios, { AxiosRequestConfig } from "axios";
 import { asyncStorageService } from "./async-storage-service";
+import { ApiResponse } from "../types/ApiResponse";
+import { RegisterResponse } from "../types/RegisterResponse";
+import { LoginResponse } from "../types/LoginResponse";
 
-const BASE_URL = "http://localhost:3000";
+const BASE_URL = "http://192.168.1.101:5000";
 
 async function apiRequest<T>(
   endpoint: string,
   method: string,
   data?: any
-): Promise<T | null> {
+): Promise<ApiResponse<T>> {
   const token = await asyncStorageService.getToken();
-  const config: AxiosRequestConfig = {
-    url: `${BASE_URL}${endpoint}`,
-    method: method as any,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : "",
-    },
-    data: data || {},
-  };
-
   try {
-    const response = await axios(config);
-    return response.data;
-  } catch (error) {
-    console.error(`API Request Error: ${error}`);
-    return null;
+    const response = await fetch(`${BASE_URL}${endpoint}`, {
+      method: method,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: token ? `Bearer ${token}` : "",
+      },
+      body: data ? JSON.stringify(data) : undefined,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        `${response.status} - ${errorData.message || response.statusText}`
+      );
+    }
+
+    const json = await response.json();
+    return json;
+  } catch (error: any) {
+    console.error(`API Request Error: ${error.message}`);
+    return {
+      message: error.message || "Request failed",
+      statusCode: 500,
+      object: null,
+    };
   }
 }
 
-export const apiService = {
-  async login(email: string, pswd: string) {
-    return apiRequest("/auth/login", "POST", { email, pswd });
+const apiService = {
+  async login(
+    email: string,
+    pswd: string
+  ): Promise<ApiResponse<LoginResponse>> {
+    return apiRequest<LoginResponse>("/auth/login", "POST", { email, pswd });
   },
 
-  async register(fullname: string, email: string, pswd: string) {
-    return apiRequest("/auth/register", "POST", { fullname, email, pswd });
+  async register(
+    fullname: string,
+    email: string,
+    pswd: string
+  ): Promise<ApiResponse<RegisterResponse>> {
+    return apiRequest<RegisterResponse>("/auth/register", "POST", {
+      fullname,
+      email,
+      pswd,
+    });
   },
 
-  async getWelcomeMessage() {
-    return apiRequest("/welcome", "GET");
-  },
-
-  async saveImage(width: number, height: number, encodedData: string) {
-    return apiRequest("/images/save", "POST", { width, height, encodedData });
-  },
-
-  async getAllImages() {
-    return apiRequest("/images/get-all", "GET");
-  },
-
-  async deleteImage(id: number) {
-    return apiRequest(`/images/${id}`, "DELETE");
+  async getWelcomeMessage(): Promise<ApiResponse<string>> {
+    return apiRequest<string>("/welcome", "GET");
   },
 };
+
+export default apiService;

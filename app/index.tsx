@@ -1,17 +1,25 @@
-import { View, Text } from "react-native";
-import React from "react";
-import { Redirect, router } from "expo-router";
-import { useEffect } from "react";
+import { Redirect } from "expo-router";
+import React, { useState, useEffect } from "react";
 import { asyncStorageService } from "../services/async-storage-service";
 
-export default async function App() {
-  const USER_TOKEN_KEY = asyncStorageService.userToken;
+export default function App() {
+  const [destinationRoute, setDestinationRoute] = useState<string | null>(null);
 
-  let destinationRoute = "";
-  const token = await asyncStorageService.getToken();
-  if (token !== null) {
-    destinationRoute = "/(drawer)/welcome-page";
-  } else {
-    destinationRoute = "/user-management/login-page";
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = await asyncStorageService.getToken();
+      if (token) {
+        setDestinationRoute("/(drawer)/welcome-screen");
+      } else {
+        setDestinationRoute("/auth/login-screen");
+      }
+    };
+    checkAuth();
+  }, []);
+
+  if (destinationRoute) {
+    return <Redirect href={destinationRoute} />;
   }
+
+  return null;
 }
