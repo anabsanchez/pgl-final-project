@@ -1,12 +1,14 @@
-import { StyleSheet, Text, View } from "react-native";
+import { View, Text, Button } from "react-native";
 import React from "react";
+import { globalStyles } from "../../styles/global-styles";
 
-export default function PhotoGallery() {
+export default function PhotoGalleryScreen() {
   return (
-    <View>
-      <Text>PhotoGallery</Text>
+    <View style={globalStyles.container}>
+      <Text style={globalStyles.title}>Photo Gallery</Text>
+      <View style={globalStyles.button}>
+        <Button title="Open Camera" color="#FFFFFF" onPress={() => {}} />
+      </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({});

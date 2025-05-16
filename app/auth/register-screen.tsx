@@ -1,6 +1,14 @@
-import { View, Text, TextInput, Button, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  Alert,
+  TouchableOpacity,
+} from "react-native";
 import React, { useState } from "react";
 import { Link, router } from "expo-router";
+import { globalStyles, colors } from "../../styles/global-styles";
 import apiService from "../../services/user-images-service";
 
 export default function Register() {
@@ -26,44 +34,41 @@ export default function Register() {
   };
 
   return (
-    <View style={{ padding: 20 }}>
-      <Text>Create an account</Text>
+    <View style={globalStyles.container}>
+      <Text style={globalStyles.title}>Create an account</Text>
+      <Text style={globalStyles.label}>Full name</Text>
       <TextInput
-        placeholder="Full name"
+        placeholder="Enter your full name here"
+        placeholderTextColor={colors.placeholder}
         value={fullname}
         onChangeText={setFullname}
-        style={{
-          marginVertical: 5,
-          padding: 5,
-          borderWidth: 1,
-          borderRadius: 5,
-        }}
+        style={globalStyles.input}
       />
+      <Text style={globalStyles.label}>Email</Text>
       <TextInput
-        placeholder="Email"
+        placeholder="Enter your email here"
+        placeholderTextColor={colors.placeholder}
         value={email}
         onChangeText={setEmail}
-        style={{
-          marginVertical: 5,
-          padding: 5,
-          borderWidth: 1,
-          borderRadius: 5,
-        }}
+        style={globalStyles.input}
       />
+
+      <Text style={globalStyles.label}>Password</Text>
       <TextInput
-        placeholder="Password"
+        placeholder="Enter your password here"
+        placeholderTextColor={colors.placeholder}
         value={password}
         secureTextEntry
         onChangeText={setPassword}
-        style={{
-          marginVertical: 5,
-          padding: 5,
-          borderWidth: 1,
-          borderRadius: 5,
-        }}
+        style={globalStyles.input}
       />
-      <Button title="Sign up" onPress={handleRegister} />
-      <Link href="./login-screen">Already have an account?</Link>
+
+      <TouchableOpacity style={globalStyles.button} onPress={handleRegister}>
+        <Text style={globalStyles.buttonText}>Sign Up</Text>
+      </TouchableOpacity>
+      <Link href="./login-screen" style={globalStyles.link}>
+        Already have an account?
+      </Link>
     </View>
   );
 }
