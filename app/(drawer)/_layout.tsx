@@ -15,10 +15,17 @@ export default function DrawerLayout() {
           }}
         />
         <Drawer.Screen
-          name="photo-gallery-screen"
+          name="camera-screen"
           options={{
-            drawerLabel: "Photo Gallery",
-            title: "Photo Gallery",
+            drawerLabel: "Camera",
+            title: "Camera",
+          }}
+        />
+        <Drawer.Screen
+          name="gallery-screen"
+          options={{
+            drawerLabel: "Gallery",
+            title: "Gallery",
           }}
         />
       </Drawer>

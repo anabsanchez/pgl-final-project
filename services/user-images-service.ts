@@ -2,6 +2,7 @@ import { asyncStorageService } from "./async-storage-service";
 import { ApiResponse } from "../types/ApiResponse";
 import { RegisterResponse } from "../types/RegisterResponse";
 import { LoginResponse } from "../types/LoginResponse";
+import { ImageResponse } from "../types/ImageResponse";
 
 const BASE_URL = "http://192.168.1.101:5000";
 
@@ -63,6 +64,26 @@ const apiService = {
 
   async getWelcomeMessage(): Promise<ApiResponse<string>> {
     return apiRequest<string>("/welcome", "GET");
+  },
+
+  async getAllImages(): Promise<ApiResponse<ImageResponse[]>> {
+    return apiRequest<ImageResponse[]>("/images/get-all", "GET");
+  },
+
+  async saveImage(
+    width: number,
+    height: number,
+    encodedData: string
+  ): Promise<ApiResponse<ImageResponse>> {
+    return apiRequest<ImageResponse>("/images/save", "POST", {
+      width,
+      height,
+      encodedData,
+    });
+  },
+
+  async deleteImage(id: number): Promise<ApiResponse<null>> {
+    return apiRequest<null>(`/images/${id}`, "DELETE");
   },
 };
 
