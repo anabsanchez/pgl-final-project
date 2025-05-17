@@ -2,6 +2,7 @@ import { View, Pressable, StyleSheet, Alert } from "react-native";
 import React, { useRef, useState } from "react";
 import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { globalStyles, colors } from "../styles/global-styles";
 
 type CameraProps = {
   setLastPicture: (uri: string) => void;
@@ -9,7 +10,7 @@ type CameraProps = {
 
 const Camera = ({ setLastPicture }: CameraProps) => {
   const cameraRef = useRef<CameraView>(null);
-  const [permission, requestPermission] = useCameraPermissions();
+  const [hasPermission, setHasPermission] = useCameraPermissions();
   const [facing, setFacing] = useState<CameraType>("back");
 
   const toggleFacing = () =>
@@ -30,13 +31,14 @@ const Camera = ({ setLastPicture }: CameraProps) => {
       Alert.alert("Error", "An unexpected error occurred.");
     }
   };
+  const openGallery = async () => {};
 
-  if (!permission) {
+  if (!hasPermission) {
     return <View />;
-  } else if (!permission.granted) {
+  } else if (!hasPermission.granted) {
     return (
-      <Pressable onPress={requestPermission} style={styles.permissionButton}>
-        <Ionicons name="camera-outline" size={30} color="#fff" />
+      <Pressable onPress={setHasPermission} style={styles.permissionButton}>
+        <Ionicons name="camera-outline" size={30} color={colors.button} />
       </Pressable>
     );
   }
@@ -50,10 +52,11 @@ const Camera = ({ setLastPicture }: CameraProps) => {
       onCameraReady={() => console.log("Camera ready!")}
     >
       <View style={styles.buttonContainer}>
-        <Pressable style={styles.iconButton} onPress={toggleFacing}>
-          <Ionicons name="camera-reverse" size={32} color="black" />
-        </Pressable>
+        <Pressable style={styles.galleryButton} onPress={openGallery} />
         <Pressable style={styles.pictureButton} onPress={takePicture} />
+        <Pressable style={styles.iconButton} onPress={toggleFacing}>
+          <Ionicons name="camera-reverse" size={32} color={colors.button} />
+        </Pressable>
       </View>
     </CameraView>
   );
@@ -75,20 +78,19 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     alignItems: "center",
-    backgroundColor: "white",
-    borderRadius: 50,
-    borderColor: "gray",
+    borderRadius: 15,
+    borderColor: colors.button,
     borderWidth: 2,
     padding: 8,
   },
   pictureButton: {
     height: 80,
     width: 80,
-    backgroundColor: "white",
-    borderRadius: 50,
-    borderColor: "gray",
+    borderRadius: 20,
+    borderColor: colors.button,
     borderWidth: 6,
   },
+  galleryButton: {},
   permissionButton: {
     justifyContent: "center",
     alignItems: "center",
