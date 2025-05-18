@@ -25,13 +25,11 @@ export default function GalleryScreen() {
       if (response.object) {
         const formattedImages = response.object.map((image) => {
           let uri = image.encodedData;
-
           if (uri.startsWith("file://")) {
             return { ...image, uri };
           } else if (!uri.startsWith("data:image")) {
             uri = `data:image/jpeg;base64,${image.encodedData}`;
           }
-
           return { ...image, uri };
         });
         setImages(formattedImages.reverse());
@@ -40,6 +38,7 @@ export default function GalleryScreen() {
       Alert.alert("Error", "Failed to fetch images.");
     }
   };
+
   const confirmDeleteImage = (id: number) => {
     Alert.alert(
       "Delete Image",
@@ -84,6 +83,7 @@ export default function GalleryScreen() {
   useFocusEffect(
     useCallback(() => {
       fetchImages();
+      setSelectedImage(null);
     }, [])
   );
 
@@ -107,7 +107,7 @@ export default function GalleryScreen() {
             )}
           />
           <Pressable style={styles.cameraButton} onPress={openCamera}>
-            <Ionicons name="camera" size={35} />
+            <Ionicons name="camera" size={35} color="#fff" />
           </Pressable>
         </>
       )}
