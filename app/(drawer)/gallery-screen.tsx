@@ -5,8 +5,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  Pressable,
 } from "react-native";
 import React, { useState, useEffect } from "react";
+import Ionicons from "@expo/vector-icons/Ionicons";
+
 import { useRouter } from "expo-router";
 import apiService from "../../services/user-images-service";
 
@@ -53,12 +56,9 @@ export default function GalleryScreen() {
           </TouchableOpacity>
         )}
       />
-      <TouchableOpacity style={styles.backButton} onPress={openCamera}>
-        <Image
-          source={require("../../assets/icon.png")}
-          style={styles.backIcon}
-        />
-      </TouchableOpacity>
+      <Pressable style={styles.cameraButton} onPress={openCamera}>
+        <Ionicons name="camera" size={35} />
+      </Pressable>
     </View>
   );
 }
@@ -68,6 +68,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: "#000",
+    width: "100%",
   },
   image: {
     width: 100,
@@ -75,13 +76,13 @@ const styles = StyleSheet.create({
     margin: 5,
     borderRadius: 5,
   },
-  backButton: {
+  cameraButton: {
     position: "absolute",
-    bottom: 20,
-    left: 20,
+    bottom: 32,
+    left: 33,
     backgroundColor: "#3A86FF",
     padding: 10,
-    borderRadius: 20,
+    borderRadius: 15,
   },
   backIcon: {
     width: 20,

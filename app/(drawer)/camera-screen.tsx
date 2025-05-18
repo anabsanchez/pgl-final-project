@@ -4,6 +4,8 @@ import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
 import { colors } from "../../styles/global-styles";
+import apiService from "../../services/user-images-service";
+import { useIsFocused } from "@react-navigation/native";
 
 const Camera = () => {
   const cameraRef = useRef<CameraView>(null);
@@ -11,6 +13,7 @@ const Camera = () => {
   const [facing, setFacing] = useState<CameraType>("back");
   const [lastPicture, setLastPicture] = useState<string>("");
   const router = useRouter();
+  const isFocused = useIsFocused();
 
   const toggleFacing = () =>
     setFacing((face) => (face === "back" ? "front" : "back"));
@@ -26,7 +29,7 @@ const Camera = () => {
       });
       if (picture && picture.uri) {
         setLastPicture(picture.uri);
-        Alert.alert("Photo captured!");
+        apiService.saveImage(picture.width, picture.height, picture.uri);
       } else {
         Alert.alert("Error", "Failed to capture the photo.");
       }
@@ -46,27 +49,29 @@ const Camera = () => {
   }
 
   return (
-    <CameraView
-      style={styles.camera}
-      facing={facing}
-      mode="picture"
-      ref={cameraRef}
-      onCameraReady={() => console.log("Camera ready!")}
-    >
-      <View style={styles.buttonContainer}>
-        <Pressable style={styles.galleryButton} onPress={openGallery}>
-          {lastPicture ? (
-            <Image source={{ uri: lastPicture }} style={styles.imageIcon} />
-          ) : (
-            <View style={styles.emptyImageIcon} />
-          )}
-        </Pressable>
-        <Pressable style={styles.pictureButton} onPress={takePicture} />
-        <Pressable style={styles.switchCameraButton} onPress={toggleFacing}>
-          <Ionicons name="camera-reverse" size={32} color={colors.button} />
-        </Pressable>
-      </View>
-    </CameraView>
+    isFocused && (
+      <CameraView
+        style={styles.camera}
+        facing={facing}
+        mode="picture"
+        ref={cameraRef}
+        onCameraReady={() => console.log("Camera ready!")}
+      >
+        <View style={styles.buttonContainer}>
+          <Pressable style={styles.galleryButton} onPress={openGallery}>
+            {lastPicture ? (
+              <Image source={{ uri: lastPicture }} style={styles.imageIcon} />
+            ) : (
+              <View style={styles.emptyImageIcon} />
+            )}
+          </Pressable>
+          <Pressable style={styles.takePictureButton} onPress={takePicture} />
+          <Pressable style={styles.switchCameraButton} onPress={toggleFacing}>
+            <Ionicons name="camera-reverse" size={32} color={colors.button} />
+          </Pressable>
+        </View>
+      </CameraView>
+    )
   );
 };
 
@@ -113,7 +118,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     padding: 8,
   },
-  pictureButton: {
+  takePictureButton: {
     height: 80,
     width: 80,
     borderRadius: 20,
