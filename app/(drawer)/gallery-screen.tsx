@@ -7,14 +7,16 @@ import {
   Alert,
   Pressable,
 } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import apiService from "../../services/user-images-service";
 import { colors } from "../../styles/global-styles";
+import ImagePreview from "../../components/ImagePreview";
 
 export default function GalleryScreen() {
   const [images, setImages] = useState<any[]>([]);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const router = useRouter();
 
   const fetchImages = async () => {
@@ -32,7 +34,7 @@ export default function GalleryScreen() {
 
           return { ...image, uri };
         });
-        setImages(formattedImages);
+        setImages(formattedImages.reverse());
       }
     } catch (error) {
       Alert.alert("Error", "Failed to fetch images.");
@@ -50,7 +52,7 @@ export default function GalleryScreen() {
         {
           text: "Delete",
           style: "destructive",
-          onPress: () => deleteImage(id), // Ejecutar la eliminación si se confirma
+          onPress: () => deleteImage(id),
         },
       ],
       { cancelable: true }
@@ -61,34 +63,54 @@ export default function GalleryScreen() {
     try {
       await apiService.deleteImage(id);
       Alert.alert("Deleted", "Image deleted successfully.");
-      fetchImages(); // Actualizar la galería después de eliminar
+      fetchImages();
     } catch (error) {
       Alert.alert("Error", "Failed to delete image.");
     }
   };
+
   const openCamera = () => {
     router.navigate("/(drawer)/camera-screen");
   };
 
-  useEffect(() => {
-    fetchImages();
-  }, []);
+  const openImagePreview = (uri: string) => {
+    setSelectedImage(uri);
+  };
+
+  const closeImagePreview = () => {
+    setSelectedImage(null);
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchImages();
+    }, [])
+  );
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={images}
-        keyExtractor={(item) => item.id.toString()}
-        numColumns={3}
-        renderItem={({ item }) => (
-          <TouchableOpacity onLongPress={() => confirmDeleteImage(item.id)}>
-            <Image source={{ uri: item.uri }} style={styles.image} />
-          </TouchableOpacity>
-        )}
-      />
-      <Pressable style={styles.cameraButton} onPress={openCamera}>
-        <Ionicons name="camera" size={35} />
-      </Pressable>
+      {selectedImage ? (
+        <ImagePreview uri={selectedImage} onClose={closeImagePreview} />
+      ) : (
+        <>
+          <FlatList
+            data={images}
+            keyExtractor={(item) => item.id.toString()}
+            numColumns={3}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() => openImagePreview(item.uri)}
+                onLongPress={() => confirmDeleteImage(item.id)}
+              >
+                <Image source={{ uri: item.uri }} style={styles.image} />
+              </TouchableOpacity>
+            )}
+          />
+          <Pressable style={styles.cameraButton} onPress={openCamera}>
+            <Ionicons name="camera" size={35} />
+          </Pressable>
+        </>
+      )}
     </View>
   );
 }
