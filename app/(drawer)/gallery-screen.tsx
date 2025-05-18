@@ -9,9 +9,9 @@ import {
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
-
 import { useRouter } from "expo-router";
 import apiService from "../../services/user-images-service";
+import { colors } from "../../styles/global-styles";
 
 export default function GalleryScreen() {
   const [images, setImages] = useState<any[]>([]);
@@ -20,7 +20,16 @@ export default function GalleryScreen() {
   const fetchImages = async () => {
     try {
       const response = await apiService.getAllImages();
-      setImages(response.object || []);
+      if (response.object) {
+        // Verificar si las imágenes están en base64 o son URLs
+        const formattedImages = response.object.map((image) => ({
+          ...image,
+          uri: image.encodedData.startsWith("data:")
+            ? image.encodedData
+            : `data:image/jpeg;base64,${image.encodedData}`, // Ajustar el prefijo
+        }));
+        setImages(formattedImages);
+      }
     } catch (error) {
       Alert.alert("Error", "Failed to fetch images.");
     }
@@ -52,7 +61,7 @@ export default function GalleryScreen() {
         numColumns={3}
         renderItem={({ item }) => (
           <TouchableOpacity onLongPress={() => deleteImage(item.id)}>
-            <Image source={{ uri: item.url }} style={styles.image} />
+            <Image source={{ uri: item.uri }} style={styles.image} />
           </TouchableOpacity>
         )}
       />
@@ -67,7 +76,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
-    backgroundColor: "#000",
+    backgroundColor: colors.background,
     width: "100%",
   },
   image: {
@@ -78,14 +87,10 @@ const styles = StyleSheet.create({
   },
   cameraButton: {
     position: "absolute",
-    bottom: 32,
+    bottom: 67,
     left: 33,
     backgroundColor: "#3A86FF",
     padding: 10,
     borderRadius: 15,
-  },
-  backIcon: {
-    width: 20,
-    height: 20,
   },
 });

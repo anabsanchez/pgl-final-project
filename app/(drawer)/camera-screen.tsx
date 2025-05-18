@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     alignItems: "center",
     position: "absolute",
-    bottom: 20,
+    bottom: 55,
     width: "100%",
   },
   galleryButton: {
