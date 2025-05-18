@@ -16,7 +16,7 @@ const Camera = () => {
     setFacing((face) => (face === "back" ? "front" : "back"));
 
   const openGallery = () => {
-    router.push("/(drawer)/gallery-screen");
+    router.navigate("/(drawer)/gallery-screen");
   };
 
   const takePicture = async () => {
@@ -54,7 +54,7 @@ const Camera = () => {
       onCameraReady={() => console.log("Camera ready!")}
     >
       <View style={styles.buttonContainer}>
-        <Pressable style={styles.imageButton} onPress={openGallery}>
+        <Pressable style={styles.galleryButton} onPress={openGallery}>
           {lastPicture ? (
             <Image source={{ uri: lastPicture }} style={styles.imageIcon} />
           ) : (
@@ -62,7 +62,7 @@ const Camera = () => {
           )}
         </Pressable>
         <Pressable style={styles.pictureButton} onPress={takePicture} />
-        <Pressable style={styles.iconButton} onPress={toggleFacing}>
+        <Pressable style={styles.switchCameraButton} onPress={toggleFacing}>
           <Ionicons name="camera-reverse" size={32} color={colors.button} />
         </Pressable>
       </View>
@@ -84,11 +84,13 @@ const styles = StyleSheet.create({
     bottom: 20,
     width: "100%",
   },
-  imageButton: {
+  galleryButton: {
     backgroundColor: "rgba(58, 134, 255, 0.5)",
-    width: 60,
-    height: 60,
-    borderRadius: 10,
+    width: 55,
+    height: 55,
+    borderRadius: 15,
+    borderWidth: 2,
+    borderColor: colors.button,
     justifyContent: "center",
     alignItems: "center",
     overflow: "hidden",
@@ -102,8 +104,10 @@ const styles = StyleSheet.create({
     height: "100%",
     backgroundColor: "rgba(58, 134, 255, 0.5)",
   },
-  iconButton: {
+  switchCameraButton: {
     alignItems: "center",
+    width: 55,
+    height: 55,
     borderRadius: 15,
     borderColor: colors.button,
     borderWidth: 2,

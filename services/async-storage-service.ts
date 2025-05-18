@@ -29,7 +29,7 @@ async function removeToken(): Promise<void> {
 
 export const asyncStorageService = {
   userToken,
-  saveToken,
+  setToken: saveToken,
   getToken,
   removeToken,
 };

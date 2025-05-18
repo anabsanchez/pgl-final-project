@@ -33,6 +33,10 @@ export default function GalleryScreen() {
     }
   };
 
+  const openCamera = () => {
+    router.navigate("/(drawer)/camera-screen");
+  };
+
   useEffect(() => {
     fetchImages();
   }, []);
@@ -49,7 +53,7 @@ export default function GalleryScreen() {
           </TouchableOpacity>
         )}
       />
-      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+      <TouchableOpacity style={styles.backButton} onPress={openCamera}>
         <Image
           source={require("../../assets/icon.png")}
           style={styles.backIcon}

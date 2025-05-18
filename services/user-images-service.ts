@@ -47,7 +47,14 @@ const apiService = {
     email: string,
     pswd: string
   ): Promise<ApiResponse<LoginResponse>> {
-    return apiRequest<LoginResponse>("/auth/login", "POST", { email, pswd });
+    const response = await apiRequest<LoginResponse>("/auth/login", "POST", {
+      email,
+      pswd,
+    });
+    if (response.statusCode === 200 && response.object?.token) {
+      await asyncStorageService.setToken(response.object.token);
+    }
+    return response;
   },
 
   async register(
