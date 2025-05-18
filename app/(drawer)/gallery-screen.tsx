@@ -38,16 +38,34 @@ export default function GalleryScreen() {
       Alert.alert("Error", "Failed to fetch images.");
     }
   };
+  const confirmDeleteImage = (id: number) => {
+    Alert.alert(
+      "Delete Image",
+      "Are you sure you want to delete this image?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => deleteImage(id), // Ejecutar la eliminación si se confirma
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
   const deleteImage = async (id: number) => {
     try {
       await apiService.deleteImage(id);
       Alert.alert("Deleted", "Image deleted successfully.");
-      fetchImages();
+      fetchImages(); // Actualizar la galería después de eliminar
     } catch (error) {
       Alert.alert("Error", "Failed to delete image.");
     }
   };
-
   const openCamera = () => {
     router.navigate("/(drawer)/camera-screen");
   };
@@ -63,7 +81,7 @@ export default function GalleryScreen() {
         keyExtractor={(item) => item.id.toString()}
         numColumns={3}
         renderItem={({ item }) => (
-          <TouchableOpacity onLongPress={() => deleteImage(item.id)}>
+          <TouchableOpacity onLongPress={() => confirmDeleteImage(item.id)}>
             <Image source={{ uri: item.uri }} style={styles.image} />
           </TouchableOpacity>
         )}
