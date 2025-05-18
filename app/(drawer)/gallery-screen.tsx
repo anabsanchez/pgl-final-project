@@ -21,20 +21,23 @@ export default function GalleryScreen() {
     try {
       const response = await apiService.getAllImages();
       if (response.object) {
-        // Verificar si las imágenes están en base64 o son URLs
-        const formattedImages = response.object.map((image) => ({
-          ...image,
-          uri: image.encodedData.startsWith("data:")
-            ? image.encodedData
-            : `data:image/jpeg;base64,${image.encodedData}`, // Ajustar el prefijo
-        }));
+        const formattedImages = response.object.map((image) => {
+          let uri = image.encodedData;
+
+          if (uri.startsWith("file://")) {
+            return { ...image, uri };
+          } else if (!uri.startsWith("data:image")) {
+            uri = `data:image/jpeg;base64,${image.encodedData}`;
+          }
+
+          return { ...image, uri };
+        });
         setImages(formattedImages);
       }
     } catch (error) {
       Alert.alert("Error", "Failed to fetch images.");
     }
   };
-
   const deleteImage = async (id: number) => {
     try {
       await apiService.deleteImage(id);
@@ -78,10 +81,11 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: colors.background,
     width: "100%",
+    alignItems: "center",
   },
   image: {
-    width: 100,
-    height: 100,
+    width: 110,
+    height: 110,
     margin: 5,
     borderRadius: 5,
   },
